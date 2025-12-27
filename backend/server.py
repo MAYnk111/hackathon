@@ -1,81 +1,101 @@
-from fastapi import FastAPI, APIRouter
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+import pymysql
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
 import uuid
-from datetime import datetime, timezone
-
+from datetime import datetime
+from contextlib import contextmanager
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Flask app setup
+app = Flask(__name__)
 
-# Create the main app without a prefix
-app = FastAPI()
+# CORS configuration
+CORS(app, 
+     origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+     supports_credentials=True,
+     allow_headers=["*"],
+     methods=["*"])
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
+# MySQL connection configuration
+MYSQL_CONFIG = {
+    'host': os.environ.get('MYSQL_HOST', 'localhost'),
+    'user': os.environ.get('MYSQL_USER', 'root'),
+    'password': os.environ.get('MYSQL_PASSWORD', 'root123'),
+    'database': os.environ.get('DB_NAME', 'test_database'),
+    'charset': 'utf8mb4',
+    'cursorclass': pymysql.cursors.DictCursor
+}
 
+# Database connection context manager
+@contextmanager
+def get_db_connection():
+    connection = pymysql.connect(**MYSQL_CONFIG)
+    try:
+        yield connection
+    finally:
+        connection.close()
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+# Routes
+@app.route('/api/', methods=['GET'])
+def root():
+    return jsonify({"message": "Hello World"})
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+@app.route('/api/status', methods=['POST'])
+def create_status_check():
+    try:
+        data = request.get_json()
+        client_name = data.get('client_name')
+        
+        if not client_name:
+            return jsonify({"error": "client_name is required"}), 400
+        
+        # Generate ID and timestamp
+        status_id = str(uuid.uuid4())
+        timestamp = datetime.utcnow()
+        
+        # Insert into database
+        with get_db_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "INSERT INTO status_checks (id, client_name, timestamp) VALUES (%s, %s, %s)"
+                cursor.execute(sql, (status_id, client_name, timestamp))
+            connection.commit()
+        
+        # Return the created object
+        return jsonify({
+            "id": status_id,
+            "client_name": client_name,
+            "timestamp": timestamp.isoformat()
+        }), 201
+        
+    except Exception as e:
+        app.logger.error(f"Error creating status check: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.route('/api/status', methods=['GET'])
+def get_status_checks():
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT id, client_name, timestamp FROM status_checks ORDER BY timestamp DESC"
+                cursor.execute(sql)
+                results = cursor.fetchall()
+        
+        # Convert datetime to ISO format
+        for row in results:
+            if isinstance(row['timestamp'], datetime):
+                row['timestamp'] = row['timestamp'].isoformat()
+        
+        return jsonify(results), 200
+        
+    except Exception as e:
+        app.logger.error(f"Error getting status checks: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 # Configure logging
 logging.basicConfig(
@@ -84,6 +104,5 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8001, debug=False)
