@@ -55,10 +55,12 @@
     },
     server: {
       port: 3000,
-      host: '0.0.0.0',
+      host: true,
       open: false,
+      strictPort: true,
       hmr: {
         clientPort: 443,
+        protocol: 'wss',
       },
     },
   });
