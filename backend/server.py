@@ -17,10 +17,10 @@ app = Flask(__name__)
 
 # CORS configuration
 CORS(app, 
-     origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+     resources={r"/api/*": {"origins": "*"}},
      supports_credentials=True,
-     allow_headers=["*"],
-     methods=["*"])
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 # MySQL connection configuration
 MYSQL_CONFIG = {
