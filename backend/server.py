@@ -97,6 +97,30 @@ def get_status_checks():
         app.logger.error(f"Error getting status checks: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/status/<status_id>', methods=['DELETE'])
+def delete_status_check(status_id):
+    try:
+        with get_db_connection() as connection:
+            with connection.cursor() as cursor:
+                # Check if record exists
+                sql_check = "SELECT id FROM status_checks WHERE id = %s"
+                cursor.execute(sql_check, (status_id,))
+                result = cursor.fetchone()
+                
+                if not result:
+                    return jsonify({"error": "Status check not found"}), 404
+                
+                # Delete the record
+                sql_delete = "DELETE FROM status_checks WHERE id = %s"
+                cursor.execute(sql_delete, (status_id,))
+            connection.commit()
+        
+        return jsonify({"message": "Status check deleted successfully", "id": status_id}), 200
+        
+    except Exception as e:
+        app.logger.error(f"Error deleting status check: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
