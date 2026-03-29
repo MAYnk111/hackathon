@@ -1,538 +1,297 @@
-# GearGuard - Equipment Maintenance Tracker
+# GearGuard
 
-**Full-Stack Equipment Management System with Flask + MySQL + React**
+A full-stack equipment maintenance tracker built with Flask, MySQL, React, and TypeScript.
 
-![Status](https://img.shields.io/badge/status-ready-green)
-![Backend](https://img.shields.io/badge/backend-Flask-blue)
-![Database](https://img.shields.io/badge/database-MySQL-orange)
-![Frontend](https://img.shields.io/badge/frontend-React%20%2B%20TypeScript-61dafb)
+GearGuard helps teams manage equipment, monitor maintenance status, and organize operational workflows from a single dashboard-style interface.
 
----
+## Table of Contents
 
-## 🎯 Project Overview
+- Overview
+- Tech Stack
+- Current Status
+- Project Structure
+- Prerequisites
+- Quick Start
+- Environment Variables
+- API Reference
+- Frontend Features
+- Database
+- Testing
+- Deployment Notes
+- Security Notes
+- Contributing
+- License
 
-GearGuard is a comprehensive equipment maintenance tracking system designed for enterprise use. Track maintenance schedules, manage assets, and never miss a service date again.
+## Overview
 
-### **Live Demo**
-🌐 **Frontend**: https://code-integrator-11.preview.emergentagent.com/
-🔧 **Backend API**: https://a2756549-1eec-4847-b8bc-0732c348cbe0.preview.emergentagent.com/api
+This repository contains two primary applications:
 
----
+- backend: A Flask API connected to MySQL
+- frontend: A React + TypeScript UI (Vite)
 
-## 🏗️ Architecture
+The frontend currently provides rich UI flows and module screens. The backend currently exposes foundational endpoints and database connectivity through a demo status-check resource.
 
-### **Tech Stack**
+## Tech Stack
 
-#### Backend
-- **Framework**: Flask 3.1.2
-- **Database**: MySQL 8.0 (MariaDB compatible)
-- **ORM**: PyMySQL 1.1.2
-- **CORS**: Flask-CORS 6.0.2
-- **Server**: Gunicorn (production) / Flask dev server
+Backend:
 
-#### Frontend
-- **Framework**: React 18.3.1 + TypeScript
-- **Build Tool**: Vite 6.3.5
-- **UI Library**: Radix UI + Tailwind CSS
-- **Icons**: Lucide React
-- **Charts**: Recharts
-- **State Management**: React Hooks
-
-#### Database
-- **Type**: MySQL/MariaDB
-- **Host**: localhost
-- **Database**: test_database
-- **User**: root
-- **Password**: root123
-
----
-
-## 📁 Project Structure
-
-```
-/app
-├── backend/
-│   ├── server.py           # Flask API server
-│   ├── requirements.txt    # Python dependencies
-│   └── .env               # Backend environment variables
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   │   ├── auth/      # Login/Register
-│   │   │   ├── dashboard/ # Main dashboard
-│   │   │   ├── equipment/ # Equipment management
-│   │   │   ├── maintenance/ # Maintenance tracking
-│   │   │   ├── team/      # Team management
-│   │   │   ├── calendar/  # Calendar view
-│   │   │   ├── kanban/    # Kanban board
-│   │   │   ├── analytics/ # Analytics & reports
-│   │   │   └── ui/        # Reusable UI components
-│   │   ├── App.tsx        # Main app component
-│   │   └── main.tsx       # Entry point
-│   ├── build/             # Production build
-│   ├── package.json       # Node dependencies
-│   ├── vite.config.ts     # Vite configuration
-│   └── .env              # Frontend environment variables
-│
-└── README.md             # This file
-```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
 - Python 3.11+
-- Node.js 20+
-- MySQL 8.0+ / MariaDB 10.11+
-- npm or yarn
+- Flask 3.1.2
+- Flask-CORS 6.0.2
+- PyMySQL 1.1.2
+- python-dotenv
 
-### 1. Backend Setup
+Frontend:
+
+- React 18
+- TypeScript
+- Vite 6
+- Radix UI components
+- Tailwind CSS utilities
+- Recharts
+
+Database:
+
+- MySQL 8+ (MariaDB compatible)
+
+## Current Status
+
+Implemented:
+
+- Flask API service is running and connected to MySQL
+- CORS is configured for API routes
+- CRUD-style demo endpoints for status checks
+- React frontend with multi-module equipment maintenance UI
+
+In progress / planned:
+
+- Full domain API implementation (equipment, maintenance, team, categories)
+- Authentication and authorization
+- Replacing frontend static/demo state with live API integration
+
+## Project Structure
+
+```text
+hackathon/
+|-- README.md
+|-- INTEGRATION_SUMMARY.md
+|-- test_result.md
+|-- backend/
+|   |-- requirements.txt
+|   `-- server.py
+|-- frontend/
+|   |-- package.json
+|   |-- vite.config.ts
+|   |-- index.html
+|   |-- build/
+|   `-- src/
+|       |-- App.tsx
+|       |-- main.tsx
+|       |-- index.css
+|       `-- components/
+|-- frontend_old_backup/
+`-- tests/
+```
+
+## Prerequisites
+
+- Python 3.11 or newer
+- Node.js 18 or newer (Node.js 20 recommended)
+- npm
+- MySQL 8+ (or compatible MariaDB)
+
+## Quick Start
+
+### 1) Clone and enter the project
 
 ```bash
-cd /app/backend
+git clone <your-repo-url>
+cd hackathon
+```
 
-# Install Python dependencies
+### 2) Start the backend
+
+```bash
+cd backend
 pip install -r requirements.txt
+python server.py
+```
 
-# Configure environment variables
-cat .env
-# MYSQL_HOST="localhost"
-# MYSQL_USER="root"
-# MYSQL_PASSWORD="root123"
-# DB_NAME="test_database"
-# CORS_ORIGINS="*"
+Backend default URL:
 
-# Create database and tables
-mysql -u root -proot123 << EOF
+- http://localhost:8001
+- API base: http://localhost:8001/api
+
+### 3) Start the frontend
+
+In a new terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend default dev URL (Vite):
+
+- http://localhost:5173
+
+### 4) Build frontend for production
+
+```bash
+cd frontend
+npm run build
+```
+
+## Environment Variables
+
+Create backend environment variables (for local development) in backend/.env:
+
+```env
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=root123
+DB_NAME=test_database
+CORS_ORIGINS=*
+```
+
+Optional frontend environment variables in frontend/.env:
+
+```env
+VITE_API_URL=http://localhost:8001/api
+VITE_BACKEND_URL=http://localhost:8001
+```
+
+## API Reference
+
+Base URL:
+
+- http://localhost:8001/api
+
+### Health Check
+
+- Method: GET
+- Endpoint: /api/
+- Response:
+
+```json
+{
+  "message": "Hello World"
+}
+```
+
+### Create Status Check
+
+- Method: POST
+- Endpoint: /api/status
+- Body:
+
+```json
+{
+  "client_name": "Acme Corp"
+}
+```
+
+- Success response (201):
+
+```json
+{
+  "id": "uuid",
+  "client_name": "Acme Corp",
+  "timestamp": "2026-03-29T10:00:00"
+}
+```
+
+### List Status Checks
+
+- Method: GET
+- Endpoint: /api/status
+
+### Delete Status Check
+
+- Method: DELETE
+- Endpoint: /api/status/{status_id}
+
+## Frontend Features
+
+The frontend includes screens and flows for:
+
+- Authentication (login/register UI)
+- Dashboard and KPI-style overview
+- Equipment management
+- Maintenance tracking and details
+- Team management
+- Calendar view
+- Kanban board
+- Analytics dashboard
+- Categories and settings
+
+Note: Most screens are currently UI-driven and still need full backend binding.
+
+## Database
+
+Current required demo table:
+
+```sql
+CREATE TABLE IF NOT EXISTS status_checks (
+  id VARCHAR(36) PRIMARY KEY,
+  client_name VARCHAR(255) NOT NULL,
+  timestamp DATETIME NOT NULL
+);
+```
+
+You can create the database and table with:
+
+```sql
 CREATE DATABASE IF NOT EXISTS test_database;
 USE test_database;
 
 CREATE TABLE IF NOT EXISTS status_checks (
-    id VARCHAR(36) PRIMARY KEY,
-    client_name VARCHAR(255) NOT NULL,
-    timestamp DATETIME NOT NULL
+  id VARCHAR(36) PRIMARY KEY,
+  client_name VARCHAR(255) NOT NULL,
+  timestamp DATETIME NOT NULL
 );
-EOF
-
-# Run the server
-python server.py
-# Server will start on http://0.0.0.0:8001
 ```
 
-### 2. Frontend Setup
+## Testing
+
+Backend smoke tests with curl:
 
 ```bash
-cd /app/frontend
-
-# Install dependencies
-npm install
-
-# Build for production
-npm run build
-
-# Serve production build
-npx serve -s build -l 3000
-
-# OR for development
-npm run dev
-```
-
-### 3. Access the Application
-
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8001/api
-- **API Health Check**: http://localhost:8001/api/
-
----
-
-## 🔌 API Endpoints
-
-### Current Endpoints (Demo)
-
-#### Health Check
-```
-GET /api/
-Response: {"message": "Hello World"}
-```
-
-#### Status Checks
-```
-POST /api/status
-Body: {"client_name": "string"}
-Response: {"id": "uuid", "client_name": "string", "timestamp": "ISO datetime"}
-
-GET /api/status
-Response: [{"id": "uuid", "client_name": "string", "timestamp": "ISO datetime"}]
-
-DELETE /api/status/<id>
-Response: {"message": "Status check deleted successfully", "id": "uuid"}
-```
-
-### 🔜 Planned Endpoints (For Full Integration)
-
-#### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/me` - Get current user
-
-#### Equipment
-- `GET /api/equipment` - List all equipment
-- `POST /api/equipment` - Create equipment
-- `GET /api/equipment/<id>` - Get equipment details
-- `PUT /api/equipment/<id>` - Update equipment
-- `DELETE /api/equipment/<id>` - Delete equipment
-
-#### Maintenance
-- `GET /api/maintenance` - List maintenance records
-- `POST /api/maintenance` - Create maintenance record
-- `GET /api/maintenance/<id>` - Get maintenance details
-- `PUT /api/maintenance/<id>` - Update maintenance
-- `DELETE /api/maintenance/<id>` - Delete maintenance
-
-#### Team
-- `GET /api/team` - List team members
-- `POST /api/team` - Add team member
-- `PUT /api/team/<id>` - Update team member
-- `DELETE /api/team/<id>` - Remove team member
-
-#### Categories
-- `GET /api/categories` - List categories
-- `POST /api/categories` - Create category
-- `PUT /api/categories/<id>` - Update category
-- `DELETE /api/categories/<id>` - Delete category
-
----
-
-## 🎨 Features
-
-### ✅ Current Features (Frontend Only - Static Data)
-
-1. **Authentication**
-   - Login screen with email/password
-   - Registration screen
-   - Remember me functionality
-   - Forgot password link
-
-2. **Dashboard**
-   - Overview statistics
-   - Recent activities
-   - Quick actions
-
-3. **Equipment Management**
-   - Equipment list with health scores
-   - Equipment details
-   - Add/Edit/Delete equipment
-   - Filter by status (good/due/overdue)
-
-4. **Maintenance Tracking**
-   - Maintenance schedules
-   - Service history
-   - Due date tracking
-   - Maintenance details
-
-5. **Team Management**
-   - Team member list
-   - Add/Edit team members
-   - Role assignment
-   - Contact information
-
-6. **Calendar View**
-   - Monthly maintenance calendar
-   - Scheduled services
-   - Due dates visualization
-
-7. **Kanban Board**
-   - Task management
-   - Drag-and-drop interface
-   - Status columns
-
-8. **Analytics**
-   - Equipment health trends
-   - Maintenance cost tracking
-   - Service completion rates
-   - Custom reports
-
-9. **Categories**
-   - Equipment categorization
-   - Category management
-
-10. **Settings**
-    - Theme toggle (Light/Dark)
-    - User preferences
-    - Logout
-
----
-
-## 📊 Database Schema (Current)
-
-### status_checks table
-```sql
-CREATE TABLE status_checks (
-    id VARCHAR(36) PRIMARY KEY,
-    client_name VARCHAR(255) NOT NULL,
-    timestamp DATETIME NOT NULL
-);
-```
-
-### 🔜 Planned Schema (For Full Integration)
-
-```sql
--- Users table
-CREATE TABLE users (
-    id VARCHAR(36) PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    name VARCHAR(255),
-    role VARCHAR(50),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Equipment table
-CREATE TABLE equipment (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(100),
-    model VARCHAR(100),
-    serial_number VARCHAR(100),
-    location VARCHAR(255),
-    status ENUM('good', 'due', 'overdue') DEFAULT 'good',
-    health_score INT DEFAULT 100,
-    employee VARCHAR(255),
-    department VARCHAR(100),
-    last_service DATE,
-    next_due DATE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Maintenance records table
-CREATE TABLE maintenance (
-    id VARCHAR(36) PRIMARY KEY,
-    equipment_id VARCHAR(36),
-    technician_name VARCHAR(255),
-    service_date DATE,
-    next_due DATE,
-    status VARCHAR(50),
-    description TEXT,
-    cost DECIMAL(10,2),
-    FOREIGN KEY (equipment_id) REFERENCES equipment(id)
-);
-
--- Team members table
-CREATE TABLE team (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    role VARCHAR(100),
-    email VARCHAR(255),
-    phone VARCHAR(50),
-    department VARCHAR(100),
-    specialization VARCHAR(255)
-);
-
--- Categories table
-CREATE TABLE categories (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    icon VARCHAR(50)
-);
-```
-
----
-
-## 🔧 Configuration
-
-### Backend Configuration
-
-**File**: `/app/backend/.env`
-```env
-MYSQL_HOST="localhost"
-MYSQL_USER="root"
-MYSQL_PASSWORD="root123"
-DB_NAME="test_database"
-CORS_ORIGINS="*"
-```
-
-### Frontend Configuration
-
-**File**: `/app/frontend/.env`
-```env
-VITE_BACKEND_URL=https://a2756549-1eec-4847-b8bc-0732c348cbe0.preview.emergentagent.com
-VITE_API_URL=https://a2756549-1eec-4847-b8bc-0732c348cbe0.preview.emergentagent.com/api
-```
-
----
-
-## 🐛 Integration Status
-
-### ✅ Completed
-- [x] Flask backend setup
-- [x] MySQL database configuration
-- [x] Frontend deployment (production build)
-- [x] Basic CORS configuration
-- [x] Demo API endpoints
-- [x] Static UI components
-
-### 🔄 In Progress
-- [ ] Full database schema implementation
-- [ ] Complete REST API endpoints
-- [ ] Frontend-Backend integration (axios calls)
-- [ ] Authentication implementation
-- [ ] Real-time data updates
-
-### 📋 To-Do
-- [ ] JWT authentication
-- [ ] File upload for equipment images
-- [ ] Email notifications
-- [ ] PDF report generation
-- [ ] Advanced analytics
-- [ ] Role-based access control
-- [ ] API documentation (Swagger/OpenAPI)
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] Deployment documentation
-
----
-
-## 🧪 Testing
-
-### Backend Testing
-```bash
-# Test health check
 curl http://localhost:8001/api/
 
-# Test create status check
 curl -X POST http://localhost:8001/api/status \
   -H "Content-Type: application/json" \
-  -d '{"client_name": "Test Client"}'
+  -d '{"client_name":"Test Client"}'
 
-# Test get all status checks
 curl http://localhost:8001/api/status
-
-# Test delete status check
-curl -X DELETE http://localhost:8001/api/status/<id>
 ```
 
-### Frontend Testing
-```bash
-cd /app/frontend
-npm run test  # (if configured)
-```
+Project also includes a tests folder for expanding automated tests.
 
----
+## Deployment Notes
 
-## 📦 Dependencies
+- frontend/build contains a production bundle artifact
+- backend/server.py runs on port 8001 by default
+- Use a production WSGI server (for example Gunicorn) and managed process runner for production environments
 
-### Backend (Python)
-See `backend/requirements.txt`:
-- flask==3.1.2
-- flask-cors==6.0.2
-- pymysql==1.1.2
-- python-dotenv>=1.0.1
-- Other utility packages
+## Security Notes
 
-### Frontend (Node.js)
-See `frontend/package.json`:
-- react@18.3.1
-- react-dom@18.3.1
-- vite@6.3.5
-- @radix-ui/* (UI components)
-- lucide-react (icons)
-- recharts (charts)
-- tailwindcss (styling)
+Before production use:
 
----
+- Replace default database credentials
+- Restrict CORS to trusted frontend origins
+- Add authentication and role-based authorization
+- Add request validation and rate limiting
+- Store secrets securely (not in source control)
 
-## 🤝 Contributing
+## Contributing
 
-This is currently a work-in-progress integration project. Backend API integration is pending.
+1. Create a feature branch
+2. Make focused changes
+3. Run local checks and smoke tests
+4. Open a pull request with a clear description
 
-### Development Workflow
-1. Backend changes: Edit `backend/server.py`, restart server
-2. Frontend changes: Edit components, rebuild with `npm run build`
-3. Test changes locally before deploying
+## License
 
----
-
-## 📝 Notes
-
-- **Current State**: Frontend is using static data (useState arrays)
-- **Backend**: Flask APIs are ready but not connected to frontend
-- **Next Step**: Replace frontend useState with axios API calls
-- **Authentication**: Currently bypassed (dummy login)
-- **Data Persistence**: Only backend demo endpoints save to MySQL
-
----
-
-## 🔐 Security Considerations
-
-⚠️ **For Production Deployment:**
-1. Change database credentials
-2. Implement proper JWT authentication
-3. Add input validation and sanitization
-4. Enable HTTPS only
-5. Implement rate limiting
-6. Add SQL injection protection (using parameterized queries)
-7. Set up proper CORS policies
-8. Add request logging and monitoring
-
----
-
-## 📄 License
-
-This project is for demonstration and development purposes.
-
----
-
-## 👥 Team
-
-- **Backend**: Flask + MySQL
-- **Frontend**: React + TypeScript + Vite
-- **Database**: MySQL/MariaDB
-- **Deployment**: Supervisor + Serve
-
----
-
-## 📞 Support
-
-For integration support or questions:
-- Check the API documentation above
-- Review the project structure
-- Test endpoints with curl commands provided
-
----
-
-## 🎯 Roadmap
-
-### Phase 1: Foundation ✅ (Complete)
-- Backend setup with Flask
-- MySQL database configuration
-- Frontend deployment
-- Basic API endpoints
-
-### Phase 2: Full Integration 🔄 (In Progress)
-- Complete database schema
-- Full REST API implementation
-- Frontend API integration
-- Authentication system
-
-### Phase 3: Advanced Features 📋 (Planned)
-- Real-time updates (WebSockets)
-- File uploads
-- Notifications
-- Reporting & Analytics
-- Role-based permissions
-
-### Phase 4: Production Ready 📋 (Planned)
-- Security hardening
-- Performance optimization
-- Comprehensive testing
-- Documentation
-- Deployment guides
-
----
-
-**Last Updated**: December 27, 2025
-**Version**: 1.0.0 (Integration Pending)
+This project is currently provided for development and hackathon/demo purposes.
